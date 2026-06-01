@@ -7,124 +7,6 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 from sklearn.preprocessing import StandardScaler
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-from sklearn.linear_model import LinearRegression, Ridge, Lasso
-from sklearn.svm import SVR
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-import warnings
-warnings.filterwarnings('ignore')
-
-# Set random seed for reproducibility
-np.random.seed(42)
-
-# ============================================================================
-# 1. LOAD AND EXPLORE DATA
-# ============================================================================
-print("="*70)
-print("LOADING DATA")
-print("="*70)
-
-df = pd.read_csv('cars24-car-price-cleaned-new.csv')
-print(f"Dataset shape: {df.shape}")
-print(f"Features: {df.columns.tolist()}")
-
-# ============================================================================
-# 2. DATA PREPROCESSING
-# ============================================================================
-print("\n" + "="*70)
-print("DATA PREPROCESSING")
-print("="*70)
-
-# Separate features and target
-X = df.drop('selling_price', axis=1)
-y = df['selling_price']
-
-print(f"Target variable (selling_price) shape: {y.shape}")
-print(f"Features shape: {X.shape}")
-
-# Remove outliers using IQR method for numerical features
-def remove_outliers(X, y, columns=None):
-    """Remove outliers using IQR method"""
-    if columns is None:
-        columns = X.select_dtypes(include=[np.number]).columns
-    
-    indices_to_keep = np.ones(len(X), dtype=bool)
-    
-    for col in columns:
-        Q1 = X[col].quantile(0.25)
-        Q3 = X[col].quantile(0.75)
-        IQR = Q3 - Q1
-        lower_bound = Q1 - 1.5 * IQR
-        upper_bound = Q3 + 1.5 * IQR
-        indices_to_keep &= (X[col] >= lower_bound) & (X[col] <= upper_bound)
-    
-    return X[indices_to_keep], y[indices_to_keep]
-
-# Also remove outliers from target variable
-X_clean, y_clean = remove_outliers(X, y)
-y_lower = y_clean.quantile(0.01)
-y_upper = y_clean.quantile(0.99)
-mask = (y_clean >= y_lower) & (y_clean <= y_upper)
-X_clean = X_clean[mask]
-y_clean = y_clean[mask]
-
-print(f"\nAfter outlier removal:")
-print(f"  X shape: {X_clean.shape}")
-print(f"  y shape: {y_clean.shape}")
-print(f"  Rows removed: {len(X) - len(X_clean)}")
-
-# ============================================================================
-# 3. TRAIN-TEST SPLIT
-# ============================================================================
-print("\n" + "="*70)
-print("TRAIN-TEST SPLIT")
-print("="*70)
-
-X_train, X_test, y_train, y_test = train_test_split(
-    X_clean, y_clean, test_size=0.2, random_state=42
-)
-
-print(f"Training set size: {X_train.shape[0]}")
-print(f"Test set size: {X_test.shape[0]}")
-print(f"Train-Test ratio: {X_train.shape[0]/X_test.shape[0]:.2f}:1")
-
-# ============================================================================
-# 4. FEATURE SCALING
-# ============================================================================
-print("\n" + "="*70)
-print("FEATURE SCALING")
-print("="*70)
-
-scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(X_train)
-X_test_scaled = scaler.transform(X_test)
-
-print("Features scaled using StandardScaler")
-print(f"Training set scaled shape: {X_train_scaled.shape}")
-print(f"Test set scaled shape: {X_test_scaled.shape}")
-
-# ============================================================================
-# 5. MODEL TESTING AND COMPARISON
-# ============================================================================
-print("\n" + "="*70)
-print("TESTING DIFFERENT ALGORITHMS")
-print("="*70)
-
-# Dictionary to store models and their results
-results = {}
-
-# 1. Linear Regression
-print("\n1. Testing Linear Regression...")
-lr = LinearRegression()
-lr.fit(X_train_scaled, y_train)
-y_pred_lr = lr.predict(X_test_scaled)
-r2_lr = r2_score(y_test, y_pred_lr)
-rmse_lr = np.sqrt(mean_squared_error(y_test, y_pred_lr))
-mae_lr = mean_absolute_error(y_test, y_pred_lr)
-results['Linear Regression'] = {'model': lr, 'r2': r2_lr, 'rmse': rmse_lr, 'mae': mae_lr}
-print(f"   R² Score: {r2_lr:.4f}")
-print(f"   RMSE: {rmse_lr:.4f}")
-print(f"   MAE: {mae_lr:.4f}")
 
 # 2. Ridge Regression
 print("\n2. Testing Ridge Regression...")
@@ -154,7 +36,7 @@ print(f"   MAE: {mae_lasso:.4f}")
 
 # 4. Random Forest
 print("\n4. Testing Random Forest...")
-rf = RandomForestRegressor(n_estimators=100, random_state=42, n_jobs=-1)
+rf = RandomForestRegressor(n_estimators=300, max_depth=10,random_state=42, n_jobs=-1)
 rf.fit(X_train, y_train)  # No scaling needed for tree-based models
 y_pred_rf = rf.predict(X_test)
 r2_rf = r2_score(y_test, y_pred_rf)
@@ -167,7 +49,7 @@ print(f"   MAE: {mae_rf:.4f}")
 
 # 5. Gradient Boosting
 print("\n5. Testing Gradient Boosting...")
-gb = GradientBoostingRegressor(n_estimators=100, random_state=42)
+gb = GradientBoostingRegressor(n_estimators=200, random_state=42)
 gb.fit(X_train, y_train)
 y_pred_gb = gb.predict(X_test)
 r2_gb = r2_score(y_test, y_pred_gb)
