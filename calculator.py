@@ -1,2 +1,2 @@
-def subtract(a,b,c,d):
-    return a+b
+def subtract(a,b):
+    return a+b+c+d
