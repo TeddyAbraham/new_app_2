@@ -37,7 +37,7 @@ st.markdown("""
 # Load the model
 @st.cache_resource
 def load_model():
-    with open(r"C:\Users\swath\new_app\models\xgb_car_price_model.pkl", "rb") as f:
+    with open(r"models\xgb_car_price_model.pkl", "rb") as f:
         model = pickle.load(f)
     return model
 
