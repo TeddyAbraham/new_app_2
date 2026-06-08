@@ -20,3 +20,5 @@ xgb_model.fit(X, y)
 # wb - write binary
 with open(r"C:\Users\swath\new_app\models\xgb_car_price_model.pkl", "wb") as f:
     pickle.dump(xgb_model, f)
+
+
