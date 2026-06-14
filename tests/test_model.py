@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 import pytest
 
-MODEL_PATH = r"C:\Users\swath\new_app\models\xgb_car_price_model.pkl"
+MODEL_PATH = r"models\xgb_car_price_model.pkl"
 
 
 SAMPLE_BATCH = np.array([

@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-DATA_PATH = r"C:\Users\swath\new_app\data\cars24-car-price-cleaned-new.csv"
+DATA_PATH = r"data\cars24-car-price-cleaned-new.csv"
 
 FEATURE_COLUMNS = ['km_driven', 'mileage', 'age', 'Petrol', 'Diesel', 'Electric']
 TARGET_COLUMN = 'selling_price'
