@@ -1,7 +1,12 @@
 import pandas as pd
 import pytest
 
-DATA_PATH = r"data\cars24-car-price-cleaned-new.csv"
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+DATA_PATH = ROOT / "data" / "cars24-car-price-cleaned-new.csv"
+MODEL_PATH = ROOT / "models" / "xgb_car_price_model.pkl"
 
 FEATURE_COLUMNS = ['km_driven', 'mileage', 'age', 'Petrol', 'Diesel', 'Electric']
 TARGET_COLUMN = 'selling_price'
